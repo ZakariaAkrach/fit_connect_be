@@ -26,11 +26,15 @@ public class AuthenticationService {
     public AuthenticationResponse register(RegisterRequest request) {
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            return AuthenticationResponse.builder().messaggio("Un utente con questa email esiste già").status("KO").build();
+            return AuthenticationResponse.builder().messaggio("Questa email esiste già").status("KO").build();
+        }
+
+        if (!Utils.validateEmail(request.getEmail())) {
+            return AuthenticationResponse.builder().messaggio("Il formato del email è sbagliato").status("KO").build();
         }
 
         if (!Utils.validatePassword(request.getPassword())) {
-            return AuthenticationResponse.builder().messaggio("La password deve essere lunga almeno 8 caratteri e deve contenere almeno una lettera maiuscola, un numero e un simbolo").status("KO").build();
+            return AuthenticationResponse.builder().messaggio("La password deve essere lunga almeno 8 caratteri e deve contenere almeno una lettera maiuscola e minuscola, un numero e un simbolo").status("KO").build();
         }
 
         var user = User.builder()
